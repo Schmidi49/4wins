@@ -1,35 +1,42 @@
+import sys
 import prnt
-import engine as eg
-import evaluation as ev
+import game
+# import evaluation as ev
 
-def UI():
-    eg.newGame()
+
+def ui(rows=6, cols=7, pve=0):
+    rows = int(rows)
+    cols = int(cols)
+    if not ((pve == 0) | (pve == 1) | (pve == 2)):
+        pve = 0
+    game.setup(rows, cols, pve)
+    curGame = game.state()
+
     turn = False
     while True:
-        prnt.board(eg.field)
+        prnt.board(curGame.field)
         try:
-            turn = eg.move(int(input("Zug: ")))
+            turn = curGame.move(int(input("Zug: ")))
         except ValueError:
             print("Input can only be an integer!")
         if turn:
-            if eg.check(turn):
-                prnt.board(eg.field)
-                if eg.result == 1:
+            if curGame.check(turn):
+                prnt.board(curGame.field)
+                if curGame.result == 1:
                     print("Player 1 won!")
-                elif eg.result == 2:
+                elif curGame.result == -1:
                     print("Player 2 won!")
-                elif eg.result == 3:
-                    print("Game ended in Draw")
+                elif curGame.result == 0:
+                    print("curGame ended in Draw")
                 break
-
-
-
-
-
+    print(curGame.moveList)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    UI()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    if len(sys.argv) < 3:
+        ui()
+    elif len(sys.argv) > 4:
+        ui(sys.argv[2], sys.argv[1], sys.argv[3])
+    else:
+        ui(sys.argv[2], sys.argv[1])
