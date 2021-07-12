@@ -36,12 +36,13 @@ class State:
     onTurn = -1
 
     # if a new instance of the class is created, all variables are cleared
-    def __init__(self):
+    def __init__(self,startturns=[]):
         self.field.resize(COLS, ROWS, refcheck=False)
         self.field.fill(0)
         self.result = False
         self.moveList.clear
         onTurn = -1
+        self.executeGame(startturns)
 
     '''
     calls all individual check function
@@ -86,7 +87,6 @@ class State:
     # executes multiple moves at once
     def executeGame(self, multiMoves):
         for singleMove in multiMoves:
-            print(singleMove)
             turn = False
             try:
                 turn = self.move(singleMove)
@@ -96,17 +96,21 @@ class State:
                 if self.check(turn):
                     break
 
-    # deletes the last move
-    def back(self):
-        try:
-            for i in range(ROWS - 1, 0):
-                if self.field[self.moveList[-1]][i] != 0:
-                    self.field[self.moveList[-1]][i] = 0
-                    self.moveList.pop(-1)
-                    self.onTurn = -self.onTurn
-                    return
-        except LookupError:
-            print("No removable error")
+    # deletes the last few move
+    def back(self, count = 1):
+        for j in range(count):
+            #safety tool, if more moves than possible are deletet
+            try:
+                for i in range(1, ROWS + 1):
+                    if self.field[self.moveList[-1]][ROWS - i] != 0:
+                        self.field[self.moveList[-1]][ROWS - i] = 0
+                        self.moveList.pop(-1)
+                        self.onTurn = -self.onTurn
+                        break
+            except IndexError:
+                print("No more move to delete")
+                return
+
 
     # generates a list of all currently possible moves by looking into the top-square
     def genMoves(self):
