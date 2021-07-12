@@ -19,10 +19,7 @@ def genTree(gamestate, depth, order=0):
 
 
 if __name__ == '__main__':
-    game.setup(4, 4)
-    cur = game.State([0, 1, 1, 2, 2, 3, 2, 3, 0, 1, 0, 0])
-    cur.onTurn *= -1  # fix for bs
-
-    test=genTree(cur, 5)
-    test.print()
+    game.setup()
+    cur = game.State()
+    genTree(cur, int(sys.argv[1])).print()
     pass
