@@ -25,7 +25,7 @@ class Tree:
     ':' signals, that a position is evaluated and the value is printed. No more successors are printed
     '''
     def print(self):
-        if self.value:
+        if self.value is not None:
             print(':', self.value, end='', sep='')
             return
         print('[', end='')

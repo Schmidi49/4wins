@@ -52,9 +52,6 @@ class State:
     '''
 
     def check(self, pos):
-        if len(self.moveList) == ROWS * COLS:
-            result = 0
-            return True
         if self.checkHor(pos[1]):
             return True
         elif self.checkVer(pos[0]):
@@ -62,6 +59,9 @@ class State:
         elif self.checkDiaL(pos[1], pos[0]):
             return True
         elif self.checkDiaR(pos[1], pos[0]):
+            return True
+        elif len(self.moveList) == ROWS * COLS:
+            self.result = 0
             return True
         return False
 
@@ -118,6 +118,7 @@ class State:
         for i in range(COLS):
             if self.field[i][ROWS - 1] == 0:
                 moves.append(i)
+        return moves
 
     # checks for a horizontal line of 4 (only the row of the executed move)
     def checkHor(self, row):
