@@ -1,13 +1,23 @@
+"""
+example of the backend-modules used to create a UI
+TODO: can be used in both modes, PvP and PvE
+"""
 import sys
 import prnt
 import game
-
+import engine
 
 # import evaluation as ev
 
 
 def ui(rows=6, cols=7, pve=0):
-    # converts arguments into usable data
+    """
+    converts arguments into usable data
+    :param rows: number of wanted rows, on default 6
+    :param cols: number of wanted coulombs, on default 7
+    :param pve: used mode, if 0 its PvP, if its 1 or -1, called player is played by the engine
+    :return: None
+    """
     rows = int(rows)
     cols = int(cols)
     if not ((pve == 0) | (pve == 1) | (pve == 2)):
@@ -29,6 +39,9 @@ def ui(rows=6, cols=7, pve=0):
         prnt.board(curGame.field)
         # only except ints as valid inputs
 
+        # FOR DEBUGGING
+        engine.evaluate(curGame)
+
         try:
             turn = curGame.move(int(input("Zug: ")))
         except ValueError:
@@ -38,9 +51,9 @@ def ui(rows=6, cols=7, pve=0):
         if turn:
             if curGame.check(turn):
                 prnt.board(curGame.field)
-                if curGame.result == 1:
+                if curGame.result == 1 * game.WIN:
                     print("Player 1 won!")
-                elif curGame.result == -1:
+                elif curGame.result == -1 * game.WIN:
                     print("Player 2 won!")
                 elif curGame.result == 0:
                     print("Game ended in Draw")

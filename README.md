@@ -6,7 +6,6 @@ main.py: A example on how to implement the other files
 game.py: In this file are the basic rules and check mechanisms for the game. Can be used for PvP
 prnt.py: visualizes the board to and ASCCI-Table. needed if you want to play on the Console
 movetree.py: Gives the structure for the tree which represents future possible move
-evaluation.py: *in development*
 web.py: *in development*
 engine.py: *in development*
 

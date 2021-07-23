@@ -1,19 +1,36 @@
-'''
-the Tree-class is a non-binary tree, which links a move to its possible successor
+"""
+contains only the Tree-class, which is a non-binary tree, which links a move to its possible successor
 in addition, its possible to assign each unique move a value, for example the evaluation of the position
 this vale is on default None, while the branch is  on default an empty dictionary (called branch)
 the key of the branch are the moves and the value is, if assigned, the successor-Tree
-'''
+"""
+
+
 class Tree:
-    # a new Tree can instantly be filled with moves or an value
+    """
+    the Tree-class is a non-binary tree, which links a move to its possible successor
+    in addition, its possible to assign each unique move a value, for example the evaluation of the position
+    this vale is on default None, while the branch is  on default an empty dictionary (called branch)
+    the key of the branch are the moves and the value is, if assigned, the successor-Tree
+    """
+
     def __init__(self, moves=[], value=None):
+        """
+        a new Tree can instantly be filled with moves or an value
+        :param moves: possible successor moves
+        :param value: the value of the reached position
+        """
         self.value = value
         self.branch = {}
         for move in moves:
             self.branch[move] = None
 
-    # sets all Tree-values of all the successor-moves to an certain value
     def endres(self, value):
+        """
+        sets all Tree-values of all the successor-moves to an certain value
+        :param value: final value
+        :return: returns itself after modifying itself
+        """
         for limb in self.branch:
             self.branch[limb] = Tree(value=value)
         return self
@@ -24,7 +41,14 @@ class Tree:
     every []-construct contains certain moves, which can contain successor-branches
     ':' signals, that a position is evaluated and the value is printed. No more successors are printed
     '''
+
     def print(self):
+        """
+        prints the tree in a readable form
+        group of moves are in braces
+        possible values of positions are shown after colons
+        :return: None
+        """
         if self.value is not None:
             print(':', self.value, end='', sep='')
             return
@@ -37,8 +61,12 @@ class Tree:
         print('\b', end='')
         print(']', end='')
 
-    #easier access threw the branch constructs, returns the called Tree after x-moves
     def getBranch(self, notation):
+        """
+        easier access threw the branch constructs, returns the called Tree after x-moves
+        :param notation: list of moves, after which
+        :return: the tree after x-Moves
+        """
         if notation:
             try:
                 return self.branch[notation[0]].getBranch(notation[1:])
@@ -49,10 +77,11 @@ class Tree:
         else:
             return self
 
+
 # test-tree
 if __name__ == '__main__':
     root = Tree([1, 2, 3])
-    root.branch[1] = Tree([2,3])
+    root.branch[1] = Tree([2, 3])
     root.branch[1].branch[2] = Tree([3])
     root.branch[1].branch[2].branch[3] = Tree([3]).endres(1)
     root.branch[1].branch[3] = Tree([2, 3])
@@ -68,7 +97,7 @@ if __name__ == '__main__':
     root.branch[3].branch[1] = Tree([2, 3])
     root.branch[3].branch[1].branch[2] = Tree([3]).endres(1)
     root.branch[3].branch[1].branch[3] = Tree(value=-1)
-    root.branch[3].branch[2] = Tree([1,3])
+    root.branch[3].branch[2] = Tree([1, 3])
     root.branch[3].branch[2].branch[3] = Tree(value=-1)
     root.branch[3].branch[2].branch[1] = Tree([3]).endres(1)
     root.branch[3].branch[3] = Tree(value=1)

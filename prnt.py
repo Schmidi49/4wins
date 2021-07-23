@@ -1,5 +1,5 @@
 """
-this function exist to visualize the field by an ascii table
+this function exist to visualize the field by an ASCII table
 the table consist of 5 different types of lines
 1) the top frame: looks like the following: ╔═══╦═══╗
 2) the horizontal frames:                     ╠═══╬═══╣
@@ -30,8 +30,12 @@ for example, a board can look like this:
 """
 
 
-# prints the board on the console
 def board(field):
+    """
+    prints the board on the console
+    :param field: the field which should get printed on the console
+    :return: None
+    """
     # get the number of rows and coulombs to generate the right sized table
     cols = len(field)
     rows = len(field.compress([True], 0).flat)
@@ -50,8 +54,12 @@ def board(field):
     print(botFrame(cols))
 
 
-# returns the complete string of the board
 def strboard(field):
+    """
+    returns the complete string of the board
+    :param field: the field which should get printed on the console
+    :return: None
+    """
     cols = len(field)
     rows = len(field.compress([True], 0).flat)
     s = topFrame(cols) + '\n'
@@ -67,9 +75,13 @@ def strboard(field):
     return s
 
 
-# prints col-times a vertical frame, some space, the looks up the square and prints the symbol
-# the argument is a single, horizontal line of squares of a field
 def tableLine(fieldLine=7 * [0]):
+    """
+    prints col-times a vertical frame, some space, the looks up the square and prints the symbol
+    if nothing is passed, returns an empty Line with only between-lines
+    :param fieldLine: a single, horizontal Line of the Field
+    :return: ASCII-string of the line
+    """
     line = []
     for num in fieldLine:
         if num == 1:
@@ -84,8 +96,12 @@ def tableLine(fieldLine=7 * [0]):
     return s
 
 
-# the top frame is relatively static, only repeated col-times
 def topFrame(cols):
+    """
+    the top frame is relatively static, only repeated col-times
+    :param cols: number of coulombs
+    :return: ASCII-string of the line
+    """
     s = '\u2554' + 7 * '\u2550'
     s += (cols - 1) * ('\u2566' + 7 * '\u2550')
     s += '\u2557'
@@ -94,6 +110,11 @@ def topFrame(cols):
 
 # the mid frame (horizontal frame) is relatively static, only repeated col-times
 def midFrame(cols):
+    """
+    the top frame is relatively static, only repeated col-times
+    :param cols: number of coulombs
+    :return: ASCII-string of the line
+    """
     s = '\u2560' + 7 * '\u2550'
     s += (cols - 1) * ('\u256C' + 7 * '\u2550')
     s += '\u2563'
@@ -102,6 +123,11 @@ def midFrame(cols):
 
 # the bottom frame is relatively static, only repeated col-times
 def botFrame(cols):
+    """
+    the top frame is relatively static, only repeated col-times
+    :param cols: number of coulombs
+    :return: ASCII-string of the line
+    """
     s = '\u255A' + 7 * '\u2550'
     s += (cols - 1) * ('\u2569' + 7 * '\u2550')
     s += '\u255D'

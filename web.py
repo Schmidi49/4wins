@@ -1,3 +1,6 @@
+"""
+a simple webserver based on ascii-art and saving the moves very primitive in the URL
+"""
 import prnt
 import game as eg
 from http.server import BaseHTTPRequestHandler, HTTPServer
