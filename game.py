@@ -36,7 +36,7 @@ class State:
     onTurn = -1
 
     # if a new instance of the class is created, all variables are cleared
-    def __init__(self,startturns=[]):
+    def __init__(self, startturns=[]):
         self.field.resize(COLS, ROWS, refcheck=False)
         self.field.fill(0)
         self.result = False
@@ -52,13 +52,13 @@ class State:
     '''
 
     def check(self, pos):
-        if self.checkHor(pos[1]):
+        if self.checkHor(pos):
             return True
-        elif self.checkVer(pos[0]):
+        elif self.checkVer(pos):
             return True
-        elif self.checkDiaL(pos[1], pos[0]):
+        elif self.checkDiaL(pos):
             return True
-        elif self.checkDiaR(pos[1], pos[0]):
+        elif self.checkDiaR(pos):
             return True
         elif len(self.moveList) == ROWS * COLS:
             self.result = 0
@@ -97,9 +97,9 @@ class State:
                     break
 
     # deletes the last few move
-    def back(self, count = 1):
+    def back(self, count=1):
         for j in range(count):
-            #safety tool, if more moves than possible are deletet
+            # safety tool, if more moves than possible are deletet
             try:
                 for i in range(1, ROWS + 1):
                     if self.field[self.moveList[-1]][ROWS - i] != 0:
@@ -111,7 +111,6 @@ class State:
                 print("No more move to delete")
                 return
 
-
     # generates a list of all currently possible moves by looking into the top-square
     def genMoves(self):
         moves = []
@@ -120,36 +119,27 @@ class State:
                 moves.append(i)
         return moves
 
-    # checks for a horizontal line of 4 (only the row of the executed move)
-    def checkHor(self, row):
-        count = 0
-        # check every square in the row
-        for i in range(COLS):
-            '''
-            if the square belongs the current player on turn, count up
-            if the counter reaches 4 -> player won
-            if there is an enemy or empty field in between -> reset the counter
-            '''
-            if self.field[i][row] == self.onTurn:
-                count += 1
-                if count == 4:
-                    self.result = self.onTurn
-                    return self.onTurn
-            else:
-                count = 0
+    # checks for a horizontal line of 4 (from the field of the move down 4 Tiles)
+    def checkHor(self, pos):
+        if (pos[1] > 2):
+            if 4 * self.onTurn == self.field[pos[0]][pos[1] - 0] + self.field[pos[0]][pos[1] - 1] + self.field[pos[0]][
+                pos[1] - 2] + self.field[pos[0]][pos[1] - 3]:
+                self.result = self.onTurn
+                return True
         return False
 
     # checks for a vertical line of 4 (only the coulomb of the executed move)
-    def checkVer(self, col):
+    # additionally, only the 3 tiles before and after the current tile get checked
+    def checkVer(self, pos):
         count = 0
         # check every square of the coulomb
-        for i in range(ROWS):
+        for i in range(0 if (pos[0] - 3) < 0 else (pos[0] - 3), COLS if (pos[0] + 4) > COLS else (pos[0] + 4)):
             '''
             if the square belongs the current player on turn, count up
             if the counter reaches 4 -> player won
             if there is an enemy or empty field in between -> reset the counter
             '''
-            if self.field[col][i] == self.onTurn:
+            if self.field[i][pos[1]] == self.onTurn:
                 count += 1
                 if count == 4:
                     self.result = self.onTurn
@@ -158,52 +148,41 @@ class State:
                 count = 0
         return False
 
-    # checks for a diagonal line of 4 (only the diagonal to the down right which contains the current move)
-    def checkDiaR(self, row, col):
+    # checks for a diagonal line of 4 (only the diagonal to the upper right corner which contains the current move)
+    # additionally, only the 3 tiles before and after the current tile get checked
+    def checkDiaR(self, pos):
         count = 0
-        # checks if the start square of the diagonal is ont vertical or horizontal border
-        if col > (ROWS - 1 - row):
-            start = ROWS - 1 - row
-        else:
-            start = col
-        i = 0
-        '''
-        from then on go threw each square of the diagonal
-        if the counter reaches 4 -> player won
-        if there is an enemy or empty field in between -> reset the counter
-        '''
-        while (row + start - i) > -1 and (col - start + i) < COLS:
-            if self.field[col - start + i][row + start - i] == self.onTurn:
+        i = -pos[0] if pos[0] < pos[1] else -pos[1]  # set the increment to the lower of the positions
+        if i < -3:
+            i = -3
+        # check until 4 tiles after current move or out of bounds
+        while i < 4 and (pos[0] + i) < COLS and (pos[1] + i) < ROWS:
+            if (self.field[pos[0] + i][pos[1] + i] == self.onTurn):
                 count += 1
                 if count == 4:
                     self.result = self.onTurn
-                    return self.onTurn
+                    return True
             else:
                 count = 0
             i += 1
+
         return False
 
-    # checks for a diagonal line of 4 (only the diagonal to the down left which contains the current move)
-    def checkDiaL(self, row, col):
+    # checks for a diagonal line of 4 (only the diagonal to the upper left corner which contains the current move)
+    # additionally, only the 3 tiles before and after the current tile get checked
+    def checkDiaL(self, pos):
         count = 0
-        # checks if the start square of the diagonal is ont vertical or horizontal border
-        if (ROWS - 1 - row) > (COLS - 1 - col):
-            start = COLS - 1 - col
-        else:
-            start = ROWS - 1 - row
-        i = 0
-        '''
-        from then on go threw each square of the diagonal
-        if the counter reaches 4 -> player won
-        if there is an enemy or empty field in between -> reset the counter
-        '''
-        while (row + start - i) > -1 and (col + start - i) > -1:
-            if self.field[col + start - i][row + start - i] == self.onTurn:
+        # set the increment to the lower delta to the down right border
+        i = pos[0] - ROWS if ROWS - pos[0] < pos[1] else -pos[1]
+        if i < -3:
+            i = -3
+        # check until 4 tiles after current move or out of bounds
+        while i < 4 and (pos[0] - i) >= 0 and (pos[1] + i) < ROWS:
+            if self.field[pos[0] - i][pos[1] + i] == self.onTurn:
                 count += 1
                 if count == 4:
                     self.result = self.onTurn
-                    return self.onTurn
+                    return True
             else:
                 count = 0
             i += 1
-        return False
