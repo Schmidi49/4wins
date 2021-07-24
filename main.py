@@ -40,7 +40,7 @@ def ui(rows=6, cols=7, pve=0):
         # only except ints as valid inputs
 
         # FOR DEBUGGING
-        engine.evaluate(curGame)
+        print("value: " + str(engine.evaluate(curGame)))
 
         try:
             turn = curGame.move(int(input("Zug: ")))

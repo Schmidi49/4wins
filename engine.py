@@ -6,8 +6,9 @@ and the best move is calculated
 import movetree as mt
 
 # multiplier of actual possible chances, see evaluate() for nearer information
-MULT = 4
-
+MULTPOT = 4
+# !ADDITIONAL! points, if some stones are in the inner center
+MULTCEN = 3
 
 def genTree(gamestate, depth, order=0):
     """
@@ -30,10 +31,10 @@ def genTree(gamestate, depth, order=0):
         return root
 
 
-def genValuedTree(gamestate, depth, order=0):
+def genCalcedTree(gamestate, depth, order=0):
     """
     TODO
-    :param gamestate: the gamestate from which the tree should be createt
+    :param gamestate: the gamestate from which the tree should be created
     :param depth: how many moves deep deep the tree should go
     :param order: internal variable for recursion, to know on which depth the tree is already
     :return: TODO
@@ -48,6 +49,7 @@ def evaluate(gamestate):
     the weights works by heavily multiplying the values, while a centered is worth 1 point, the potential to end is worth
     1000 points (a win is always better and worth 1M points)
     stones in center are a symptom for a good position, the result is a potential to end, therefore the weight
+    1 appart form the brder are worth one point, if the stone is 2 or more appart, its worth additional points
     :param gamestate: the gamestate which should be evaluated
     :return: value of the position
     """
@@ -59,9 +61,12 @@ def evaluate(gamestate):
     # value of the position
     value = 0
     # instant value centerpieces
+    for i in range(1, cols - 1):
+        for j in range(1, rows - 1):
+            value += gamestate.field[i][j]
     for i in range(2, cols - 2):
         for j in range(2, rows - 2):
-            value += gamestate.field[i][j]
+            value += MULTCEN * gamestate.field[i][j]
 
     # height-profile of the columns
     height = []
@@ -81,17 +86,17 @@ def evaluate(gamestate):
     """
     the second, but heavier-weighted methode for evaluating are the potential chances
     so the margin of error or the potential for playmaking is measured
-    actual winning moves (directly the height) are worth MULT (scalable factor) times the points
+    actual winning moves (directly the height) are worth MULTPOT (scalable factor) times the points
     """
 
     # first col has to be separated due to overflows
-    value += MULT * potWin(gamestate, [0, height[0]])
+    value += MULTPOT * potWin(gamestate, [0, height[0]])
     if height[1] < height[0]:
         for j in range(height[1] + 1, height[0] + 1):
-            value += potWin(gamestate, [1, height[j]])
+            value += potWin(gamestate, [1, j])
     # first checks the direct height of the cols, then goes up or down towards the nex one to cover every border-field
     for i in range(1, (cols - 1)):
-        value += MULT * potWin(gamestate, [i, height[j]])
+        value += MULTPOT * potWin(gamestate, [i, height[i]])
         if height[i + 1] < height[i]:
             for j in range(height[i + 1] + 1, height[i] + 1):
                 value += potWin(gamestate, [i + 1, j])
@@ -99,7 +104,7 @@ def evaluate(gamestate):
             for j in range(height[i] + 1, height[i + 1] + 1):
                 value += potWin(gamestate, [i, j])
     # last col has to be separated due to overflows
-    value += MULT * potWin(gamestate, [cols - 1, height[cols - 1]])
+    value += MULTPOT * potWin(gamestate, [cols - 1, height[cols - 1]])
 
     # resets the onTurn, cause State is Mutable
     gamestate.onTurn = save
