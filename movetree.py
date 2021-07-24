@@ -81,6 +81,7 @@ class Tree:
     def getMove(self):
         """
         returns a possible move from the (ideal optimized) tree and cuts the tree to that branch
+        TODO: engines doesnt go for the faster win
         :return: the selected move, False if there is no possible move
         """
         posMoves = []
