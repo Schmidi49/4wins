@@ -20,12 +20,11 @@ def ui(rows=6, cols=7, pve=0):
     """
     rows = int(rows)
     cols = int(cols)
-    if not ((pve == 0) | (pve == 1) | (pve == 2)):
+    if not ((pve == 0) | (pve == 1) | (pve == -1)):
         pve = 0
-    game.setup(rows, cols, pve)
 
     # setup a gamestate, which is the current game
-    curGame = game.State()
+    curGame = game.State(ROWS=rows, COLS=cols, PVE=pve)
 
     '''
     turn is the returned value of the check-function
@@ -93,11 +92,12 @@ def ui(rows=6, cols=7, pve=0):
 
     # at the end of the game, print the list of executed moves
     print(curGame.moveList)
+    input()
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    ui(pve=1)
+    ui(pve=-1)
     """
     if len(sys.argv) < 3:
         ui()

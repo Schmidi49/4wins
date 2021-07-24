@@ -84,19 +84,16 @@ def evaluate(gamestate):
     :param gamestate: the gamestate which should be evaluated
     :return: value of the position
     """
-    cols = gamestate.cols()
-    rows = gamestate.rows()
-
     # save of the onTurn, cause evaluated messes with the gamestate and it has to be reseted, cause State is Mutable
     save = gamestate.onTurn
     # value of the position
     value = 0
     # instant value centerpieces
-    for i in range(1, cols - 1):
-        for j in range(1, rows - 1):
+    for i in range(1, gamestate.cols - 1):
+        for j in range(1, gamestate.rows - 1):
             value += gamestate.field[i][j]
-    for i in range(2, cols - 2):
-        for j in range(2, rows - 2):
+    for i in range(2, gamestate.cols - 2):
+        for j in range(2, gamestate.rows - 2):
             value += MULTCEN * gamestate.field[i][j]
 
     # height-profile of the columns
@@ -104,14 +101,14 @@ def evaluate(gamestate):
     # internal variable
     cur = 0
     # calc height-profile coulomb by coulomb
-    for i in range(cols):
-        for j in range(rows):
+    for i in range(gamestate.cols):
+        for j in range(gamestate.rows):
             cur = gamestate.field[i][j]
             if cur == 0:
                 height.append(j)
                 break
         if cur != 0:
-            height.append(rows)
+            height.append(gamestate.rows)
             cur = 0
 
     """
@@ -126,7 +123,7 @@ def evaluate(gamestate):
         for j in range(height[1] + 1, height[0] + 1):
             value += potWin(gamestate, [1, j])
     # first checks the direct height of the cols, then goes up or down towards the nex one to cover every border-field
-    for i in range(1, (cols - 1)):
+    for i in range(1, (gamestate.cols - 1)):
         value += MULTPOT * potWin(gamestate, [i, height[i]])
         if height[i + 1] < height[i]:
             for j in range(height[i + 1] + 1, height[i] + 1):
@@ -135,7 +132,7 @@ def evaluate(gamestate):
             for j in range(height[i] + 1, height[i + 1] + 1):
                 value += potWin(gamestate, [i, j])
     # last col has to be separated due to overflows
-    value += MULTPOT * potWin(gamestate, [cols - 1, height[cols - 1]])
+    value += MULTPOT * potWin(gamestate, [gamestate.cols - 1, height[gamestate.cols - 1]])
 
     # resets the onTurn, cause State is Mutable
     gamestate.onTurn = save
@@ -149,7 +146,7 @@ def potWin(gamestate, pos):
     :param pos: square on which the check is made
     :return: value of this exact squre
     """
-    if pos[1] != gamestate.rows():
+    if pos[1] != gamestate.rows:
         value = 0
         gamestate.field[pos[0]][pos[1]] = 1
         gamestate.onTurn = 1
@@ -175,7 +172,6 @@ if __name__ == '__main__':
     import game
     import prnt
 
-    game.setup()
     cur = game.State()
 
     cur.move(2)
