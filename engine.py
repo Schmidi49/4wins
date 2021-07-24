@@ -10,15 +10,15 @@ MULTPOT = 4
 # !ADDITIONAL! points, if some stones are in the inner center
 MULTCEN = 3
 
-def genTree(gamestate, depth, order=0):
+
+def genTree(gamestate, depth):
     """
-    generates a blank tree from a certain position with a certain depth
-    :param gamestate: the gamestate from which the tree should be createt
-    :param depth: how many moves deep deep the tree should go
-    :param order: internal variable for recursion, to know on which depth the tree is already
+    generates a blank tree from a certain position with a certain depth, at the end bottom, fills in values
+    :param gamestate: the gamestate from which the tree should be created
+    :param depth: how many moves deep deep the tree should go, gets one lower for each step of the recursion
     :return: full grown movetree in form of a non binary Tree
     """
-    if order < depth:
+    if depth != 0:
         root = mt.Tree(gamestate.genMoves())
         for limb in root.branch:
             ge = gamestate.check(gamestate.move(limb))
@@ -26,9 +26,39 @@ def genTree(gamestate, depth, order=0):
                 root.branch[limb] = mt.Tree(value=gamestate.result)
                 gamestate.result = None
             else:
-                root.branch[limb] = genTree(gamestate, depth, order + 1)
+                root.branch[limb] = genTree(gamestate, depth - 1)
             gamestate.back()
         return root
+    else:
+        return mt.Tree(value=evaluate(gamestate))
+
+
+def minimax(tree, nextTurn):
+    """
+    performs a minimax-search on the tree to find the best possible move
+    :param tree: tree onto which the minimax is performed
+    :param nextTurn: which player is on turn at the starting position
+    :return: best move for the player onTurn
+    """
+    if tree.value is not None:
+        return tree.value
+
+    # player who tries to maximize
+    if nextTurn == 1:
+        maxReturn = - 1073741824  # 2^30
+        for index in tree.branch:
+            maxReturn = max(maxReturn, minimax(tree.branch[index], -1))
+        tree.value = maxReturn
+        return maxReturn
+
+    # player who tries to minimize
+    else:
+        minReturn = 1073741824  # 2^30
+        for index in tree.branch:
+            minReturn = min(minReturn, minimax(tree.branch[index], 1))
+        tree.value = minReturn
+        return minReturn
+
 
 
 def genCalcedTree(gamestate, depth, order=0):
@@ -40,6 +70,7 @@ def genCalcedTree(gamestate, depth, order=0):
     :return: TODO
     """
     pass
+
 
 def evaluate(gamestate):
     """
@@ -138,7 +169,8 @@ def potWin(gamestate, pos):
         return value
     return 0
 
-#testing function
+
+# testing function
 if __name__ == '__main__':
     import game
     import prnt
@@ -146,15 +178,16 @@ if __name__ == '__main__':
     game.setup()
     cur = game.State()
 
-    cur.field[3][0] = 1
-    cur.field[3][1] = 1
-    cur.field[3][2] = 1
-    cur.field[4][2] = 1
-    cur.field[5][2] = 1
-    cur.field[4][0] = -1
-    cur.field[4][1] = -1
-    cur.field[5][0] = -1
-    cur.field[5][1] = -1
+    cur.move(2)
+    cur.move(3)
+    cur.move(2)
+    cur.move(3)
+    cur.move(3)
 
     prnt.board(cur.field)
-    print(evaluate(cur))
+
+    root = genTree(cur, 5)
+    # root.print()
+    minimax(root, -cur.onTurn)
+    print(root.value)
+    print(root.getMove())

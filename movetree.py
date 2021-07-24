@@ -4,6 +4,7 @@ in addition, its possible to assign each unique move a value, for example the ev
 this vale is on default None, while the branch is  on default an empty dictionary (called branch)
 the key of the branch are the moves and the value is, if assigned, the successor-Tree
 """
+import random
 
 
 class Tree:
@@ -77,6 +78,19 @@ class Tree:
         else:
             return self
 
+    def getMove(self):
+        """
+        returns a possible move from the (ideal optimized) tree and cuts the tree to that branch
+        :return: the selected move, False if there is no possible move
+        """
+        posMoves = []
+        for i in self.branch:
+            if self.branch[i].value == self.value:
+                posMoves.append(i)
+
+        return posMoves[random.randrange(len(posMoves))]
+
+
 
 # test-tree
 if __name__ == '__main__':
@@ -104,5 +118,7 @@ if __name__ == '__main__':
 
     root.print()
     print()
-    test = root.getBranch([1, 3, 2])
-    test.print()
+    import engine
+    engine.minimax(root, -1)
+    print(root.value)
+    print(root.getMove())

@@ -51,9 +51,10 @@ class State:
 
     def cols(self):
         return COLS
-
     def pve(self):
         return PVE
+    def win(self):
+        return WIN
 
     # if a new instance of the class is created, all variables are cleared
     def __init__(self, startturns=[]):

@@ -34,39 +34,75 @@ def ui(rows=6, cols=7, pve=0):
     '''
     turn = False
 
-    while True:
-        # prints the board
-        prnt.board(curGame.field)
-        # only except ints as valid inputs
+    # function for PvP
+    if pve == 0:
+        while True:
+            # prints the board
+            prnt.board(curGame.field)
 
-        # FOR DEBUGGING
-        print("value: " + str(engine.evaluate(curGame)))
+            # only except ints as valid inputs
+            try:
+                turn = curGame.move(int(input("Zug: ")))
+            except ValueError:
+                print("Input can only be an integer!")
 
-        try:
-            turn = curGame.move(int(input("Zug: ")))
-        except ValueError:
-            print("Input can only be an integer!")
+            # if there is an result, inform the user
+            if turn:
+                if curGame.check(turn):
+                    prnt.board(curGame.field)
+                    if curGame.result == 1 * game.WIN:
+                        print("Player 1 won!")
+                    elif curGame.result == -1 * game.WIN:
+                        print("Player 2 won!")
+                    elif curGame.result == 0:
+                        print("Game ended in Draw")
+                    break
 
-        # if there is an result, inform the user
-        if turn:
+    # function for PVE
+    else:
+        while True:
+            # prints the board
+            prnt.board(curGame.field)
+            turn = False
+
+            # inverse logic, cause only when the next move is made, onTurn changes
+            if curGame.onTurn == pve:
+                while not turn:
+                    # only except ints as valid inputs
+                    try:
+                        turn = curGame.move(int(input("Zug: ")))
+                    except ValueError:
+                        print("Input can only be an integer!")
+            else:
+                print("Calculating . . . ")
+                root = engine.genTree(curGame, 5)
+                engine.minimax(root, pve)
+                turn = curGame.move(root.getMove())
+                print("Found move: " + str(curGame.moveList[-1]))
+
+            # if there is an result, inform the user
             if curGame.check(turn):
                 prnt.board(curGame.field)
-                if curGame.result == 1 * game.WIN:
-                    print("Player 1 won!")
-                elif curGame.result == -1 * game.WIN:
-                    print("Player 2 won!")
+                if curGame.result == pve * game.WIN:
+                    print("Engine won!")
+                elif curGame.result == -pve * game.WIN:
+                    print("Human won!")
                 elif curGame.result == 0:
                     print("Game ended in Draw")
                 break
+
     # at the end of the game, print the list of executed moves
     print(curGame.moveList)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    ui(pve=1)
+    """
     if len(sys.argv) < 3:
         ui()
     elif len(sys.argv) > 4:
         ui(sys.argv[2], sys.argv[1], sys.argv[3])
     else:
         ui(sys.argv[2], sys.argv[1])
+    """
